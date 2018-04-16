@@ -1,3 +1,4 @@
+import javax.print.attribute.standard.NumberUp;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,30 +48,51 @@ public final class AddController {
      */
     private void getAddButtonSemantics() {
         //TODO implement method
-        addView.getAddButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    //if (inventoryModel.searchBySku(addView.getSkuTextField().getText()).isPresent()) {
-                      //  JOptionPane.showMessageDialog(null, "This Product SKU is already in use!");
-                   //}
-                    if (!(Integer.parseInt(addView.getWholesalePriceTextField().getText()) > 0)) {
-                        JOptionPane.showMessageDialog(null, "Number Issue asshat");
-                    }
-                    if (!(Integer.parseInt(addView.getNameTextField().getText()) > 0)) {
-                        JOptionPane.showMessageDialog(null, "Number ISSUE!");
-                    }
-                    if (!(Integer.parseInt(addView.getQuantityTextField().getText()) > 0)) {
-                        JOptionPane.showMessageDialog(null, "AHH!");
-                    }
-                    if (!(Integer.parseInt(addView.getRetailPriceTextField().toString()) > 0)) {
-                        JOptionPane.showMessageDialog(null, "HAHAHAHA");
-                    }
-                } catch (NumberFormatException exception) {
+        final boolean[] validIn = {true};
 
+                    if (inventoryModel.searchBySku(addView.getSkuTextField().getText()).isPresent()) {
+                        JOptionPane.showMessageDialog(null, "This Product SKU is already in use!");
+                        validIn[0] = false;
+                    }
+
+                    try {
+                        if (!(Double.parseDouble(addView.getWholesalePriceTextField().getText()) > 0)) {
+                            JOptionPane.showMessageDialog(null, "Wholesale price must be above 0");
+                            validIn[0] = false;
+                        }
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(null, "Wholesale price must be a real number");
+                        validIn[0] = false;
+                    }
+
+                    try {
+                        if (!(Integer.parseInt(addView.getQuantityTextField().getText()) > 0)) {
+                            JOptionPane.showMessageDialog(null, "Quantity must be above 0");
+                            validIn[0] = false;
+                        }
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(null, "Quantity must be an integer");
+                        validIn[0] = false;
+                    }
+
+                    try {
+                        if (!(Double.parseDouble(addView.getRetailPriceTextField().getText()) > 0)) {
+                            JOptionPane.showMessageDialog(null, "Retail price must be above 0");
+                            validIn[0] = false;
+                        }
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(null, "Retail price must be a real number");
+                        validIn[0] = false;
+                    }
+
+                    if (validIn[0]) {
+                        Product addProduct = new Product(addView.getSkuTextField().getText(), addView.getNameTextField().getText(), Double.parseDouble(addView.getWholesalePriceTextField().getText()), Double.parseDouble(addView.getRetailPriceTextField().getText()), Integer.parseInt(addView.getQuantityTextField().getText()));
+                        inventoryModel.add(addProduct);
+                        JOptionPane.showMessageDialog(null, "Product added to inventory");
+                    }
                 }
-            }
-        });
+            });
+        }
     } //getAddButtonSemantics
 
     /**
@@ -86,6 +108,8 @@ public final class AddController {
                 addView.getRetailPriceTextField().setText("");
                 addView.getWholesalePriceTextField().setText("");
                 addView.getSkuTextField().setText("");
+                addView.getSkuTextField().requestFocus();
+
             }
         });
     } //getClearButtonSemantics
